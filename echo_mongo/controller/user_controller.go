@@ -86,42 +86,42 @@ func (u *UserController) CreateUser(c echo.Context) error {
 	})
 }
 
-func (u *UserController) GetUsers(c echo.Context) error {
-	users, err := u.UserService.HandleGetUsers(c)
+// func (u *UserController) GetUsers(c echo.Context) error {
+// 	users, err := u.UserService.HandleGetUsers(c)
 
-	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Response{
-			StatusCode: http.StatusBadRequest,
-			Message:    err.Error(),
-			Data:       nil,
-		})
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, common.Response{
+// 			StatusCode: http.StatusBadRequest,
+// 			Message:    err.Error(),
+// 			Data:       nil,
+// 		})
 
-		return nil
-	}
+// 		return nil
+// 	}
 
-	return c.JSON(http.StatusOK, common.Response{
-		StatusCode: http.StatusOK,
-		Message:    "Search data successfully",
-		Data:       users,
-	})
-}
+// 	return c.JSON(http.StatusOK, common.Response{
+// 		StatusCode: http.StatusOK,
+// 		Message:    "Search data successfully",
+// 		Data:       users,
+// 	})
+// }
 
-func (u *UserController) GetUsers(c echo.Context) error {
-	users, err := u.UserService.HandleGetUsers(c)
+// func (u *UserController) GetUsers(c echo.Context) error {
+// 	users, err := u.UserService.HandleGetUsers(c)
 
-	if err != nil {
-		c.JSON(http.StatusBadRequest, common.Response{
-			StatusCode: http.StatusBadRequest,
-			Message:    err.Error(),
-			Data:       nil,
-		})
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, common.Response{
+// 			StatusCode: http.StatusBadRequest,
+// 			Message:    err.Error(),
+// 			Data:       nil,
+// 		})
 
-		return nil
-	}
+// 		return nil
+// 	}
 
-	return c.JSON(http.StatusOK, common.Response{
-		StatusCode: http.StatusOK,
-		Message:    "Search data successfully",
-		Data:       users,
-	})
-}
+// 	return c.JSON(http.StatusOK, common.Response{
+// 		StatusCode: http.StatusOK,
+// 		Message:    "Search data successfully",
+// 		Data:       users,
+// 	})
+// }

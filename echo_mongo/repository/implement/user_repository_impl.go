@@ -80,12 +80,12 @@ func (u *UserImplement) CreateUser(ctx context.Context, dto model.User) (interfa
 	return user, nil
 }
 
-func (u *UserImplement) UpdateUser(ctx context.Context, dto dto.UpdateUserDto, id string) (interface{}, error) {
+func (u *UserImplement) UpdateUser(ctx context.Context, dto dto.UpdateUserDto, id string) (*model.User, error) {
 	collection := u.mongoDB.Collection("user")
 
 	objectId, err := primitive.ObjectIDFromHex(id)
 
-	result, err := collection.UpdateOne(ctx, bson.M{"_id": objectId}, dto)
+	_, err = collection.UpdateOne(ctx, bson.M{"_id": objectId}, dto)
 
 	if err != nil {
 		return nil, err
@@ -93,9 +93,13 @@ func (u *UserImplement) UpdateUser(ctx context.Context, dto dto.UpdateUserDto, i
 
 	var user *model.User
 
-	return result.InsertedID, nil
+	if err := collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&user); err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
-func (u *UserImplement) DeleteUser(ctx context.Context, id string) (*model.User, error) {
-	return nil, nil
+func (u *UserImplement) DeleteUser(ctx context.Context, id string) error {
+	return nil
 }

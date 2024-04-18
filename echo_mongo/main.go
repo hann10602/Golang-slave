@@ -3,6 +3,10 @@ package main
 import (
 	"echo_mongo/db"
 	"echo_mongo/initializer"
+	"echo_mongo/repository/implement"
+	"echo_mongo/service"
+	"echo_mongo/controller"
+	"echo_mongo/routes"
 	"log"
 
 	"github.com/labstack/echo/v4"
@@ -24,11 +28,23 @@ func main() {
 	defer mongoDB.Close()
 
 	e := echo.New()
-	e.Use(middleware.CORSWithConfig{
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins:	  []string{config.ClientOrigin},
 		AllowCredentials: true,
-		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept}
-	})
+	}))
 
-	userRepo
+	userRepo := implement.NewUserImplement(mongoDB.Client.Database(config.DBName))
+	userService := service.NewUserService(userRepo)
+	userController := controller.UserController{
+		UserService: userService,
+	}
+
+	api := routes.API{
+		Echo: e,
+		UserController: userController,
+	}
+
+	api.SetUpRouter()
+
+	e.Logger.Fatal(e.Start(":" + config.ServerPort))
 }
