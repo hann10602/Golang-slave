@@ -2,6 +2,7 @@ package routes
 
 import (
 	"echo_mongo/controller"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -10,7 +11,6 @@ type API struct {
 	UserController controller.UserController
 }
 
-
 func (API *API) SetUpRouter() {
 	// config, err := initializer.LoadConfig(".")
 	// if err != nil {
@@ -18,10 +18,10 @@ func (API *API) SetUpRouter() {
 	// }
 
 	apiV1 := API.Echo.Group("api/v1")
-	user := apiV1.Group("/users")
+	user := apiV1.Group("/user")
 	user.GET("", API.UserController.GetUsers)
 	user.GET("/:id", API.UserController.GetUserById)
 	user.POST("", API.UserController.CreateUser)
-	user.PUT("/:id", API.UserController.GetUsers)
-	user.DELETE("/:id", API.UserController.GetUsers)
+	user.PUT("/:id", API.UserController.UpdateUser)
+	user.DELETE("/:id", API.UserController.DeleteUser)
 }

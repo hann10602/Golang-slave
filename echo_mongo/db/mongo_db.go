@@ -36,6 +36,7 @@ func (m *MongoDB) Connect() {
 	}
 
 	fmt.Println("MongoDB connect successfully")
+	m.Client = client
 }
 
 func (m *MongoDB) Close() {

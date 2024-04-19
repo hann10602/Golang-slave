@@ -2,6 +2,7 @@ package controller
 
 import (
 	"echo_mongo/common"
+	dto "echo_mongo/dto/user"
 	model "echo_mongo/model/user"
 	"echo_mongo/service"
 	"net/http"
@@ -10,7 +11,7 @@ import (
 )
 
 type UserController struct {
-	UserService service.UserService
+	UserService service.IUserService
 }
 
 func (u *UserController) GetUsers(c echo.Context) error {
@@ -86,42 +87,58 @@ func (u *UserController) CreateUser(c echo.Context) error {
 	})
 }
 
-// func (u *UserController) GetUsers(c echo.Context) error {
-// 	users, err := u.UserService.HandleGetUsers(c)
+func (u *UserController) UpdateUser(c echo.Context) error {
+	var user dto.UpdateUserDto
 
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, common.Response{
-// 			StatusCode: http.StatusBadRequest,
-// 			Message:    err.Error(),
-// 			Data:       nil,
-// 		})
+	userId := c.Param("id")
 
-// 		return nil
-// 	}
+	if err := c.Bind(&user); err != nil {
+		c.JSON(http.StatusBadRequest, common.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    err.Error(),
+			Data:       nil,
+		})
 
-// 	return c.JSON(http.StatusOK, common.Response{
-// 		StatusCode: http.StatusOK,
-// 		Message:    "Search data successfully",
-// 		Data:       users,
-// 	})
-// }
+		return nil
+	}
 
-// func (u *UserController) GetUsers(c echo.Context) error {
-// 	users, err := u.UserService.HandleGetUsers(c)
+	objectId, err := u.UserService.HandleUpdateUser(c, user, userId)
 
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, common.Response{
-// 			StatusCode: http.StatusBadRequest,
-// 			Message:    err.Error(),
-// 			Data:       nil,
-// 		})
+	if err != nil {
+		c.JSON(http.StatusBadRequest, common.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    err.Error(),
+			Data:       nil,
+		})
 
-// 		return nil
-// 	}
+		return nil
+	}
 
-// 	return c.JSON(http.StatusOK, common.Response{
-// 		StatusCode: http.StatusOK,
-// 		Message:    "Search data successfully",
-// 		Data:       users,
-// 	})
-// }
+	return c.JSON(http.StatusOK, common.Response{
+		StatusCode: http.StatusOK,
+		Message:    "Update data successfully",
+		Data:       objectId,
+	})
+}
+
+func (u *UserController) DeleteUser(c echo.Context) error {
+	userId := c.Param("id")
+
+	err := u.UserService.HandleDeleteUser(c, userId)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, common.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    err.Error(),
+			Data:       nil,
+		})
+
+		return nil
+	}
+
+	return c.JSON(http.StatusOK, common.Response{
+		StatusCode: http.StatusOK,
+		Message:    "Delete data successfully",
+		Data:       true,
+	})
+}

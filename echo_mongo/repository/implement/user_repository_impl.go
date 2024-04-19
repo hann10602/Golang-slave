@@ -5,6 +5,7 @@ import (
 	dto "echo_mongo/dto/user"
 	model "echo_mongo/model/user"
 	"echo_mongo/repository"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -62,30 +63,57 @@ func (u *UserImplement) GetUserById(ctx context.Context, id string) (*model.User
 	return user, nil
 }
 
-func (u *UserImplement) CreateUser(ctx context.Context, dto model.User) (interface{}, error) {
+func (u *UserImplement) CreateUser(ctx context.Context, dto model.User) (*model.User, error) {
 	collection := u.mongoDB.Collection("user")
 
-	result, err := collection.InsertOne(ctx, dto)
+	data := bson.M{
+		"username":  dto.Username,
+		"password":  dto.Password,
+		"email":     dto.Email,
+		"role":      "USER",
+		"countryId": "1",
+	}
+
+	result, err := collection.InsertOne(ctx, data)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var user *model.User
+	user, err := u.GetUserById(ctx, fmt.Sprint(result.InsertedID))
 
-	if err := collection.FindOne(ctx, bson.M{"_id": result.InsertedID}).Decode(&user); err != nil {
+	if err != nil {
 		return nil, err
 	}
 
 	return user, nil
+
+	// var user *model.User
+
+	// if err := collection.FindOne(ctx, bson.M{"_id": result.InsertedID}).Decode(&user); err != nil {
+	// 	return nil, err
+	// }
+
+	// return user, nil
 }
 
 func (u *UserImplement) UpdateUser(ctx context.Context, dto dto.UpdateUserDto, id string) (*model.User, error) {
 	collection := u.mongoDB.Collection("user")
 
+	data := bson.M{
+		"$set": bson.M{
+			"email": dto.Email,
+			"role":  dto.Role,
+		},
+	}
+
 	objectId, err := primitive.ObjectIDFromHex(id)
 
-	_, err = collection.UpdateOne(ctx, bson.M{"_id": objectId}, dto)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = collection.UpdateOne(ctx, bson.M{"_id": objectId}, data)
 
 	if err != nil {
 		return nil, err
@@ -101,5 +129,19 @@ func (u *UserImplement) UpdateUser(ctx context.Context, dto dto.UpdateUserDto, i
 }
 
 func (u *UserImplement) DeleteUser(ctx context.Context, id string) error {
+	collection := u.mongoDB.Collection("user")
+
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = collection.DeleteOne(ctx, bson.M{"_id": objectId})
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

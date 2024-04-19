@@ -1,12 +1,12 @@
 package main
 
 import (
+	"echo_mongo/controller"
 	"echo_mongo/db"
 	"echo_mongo/initializer"
 	"echo_mongo/repository/implement"
-	"echo_mongo/service"
-	"echo_mongo/controller"
 	"echo_mongo/routes"
+	"echo_mongo/service"
 	"log"
 
 	"github.com/labstack/echo/v4"
@@ -29,7 +29,7 @@ func main() {
 
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:	  []string{config.ClientOrigin},
+		AllowOrigins:     []string{config.ClientOrigin},
 		AllowCredentials: true,
 	}))
 
@@ -40,7 +40,7 @@ func main() {
 	}
 
 	api := routes.API{
-		Echo: e,
+		Echo:           e,
 		UserController: userController,
 	}
 
