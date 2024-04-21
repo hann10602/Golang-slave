@@ -15,7 +15,6 @@ type UserService struct {
 type IUserService interface {
 	HandleGetUsers(echo.Context) ([]*model.User, error)
 	HandleGetUserById(echo.Context, string) (*model.User, error)
-	HandleCreateUser(echo.Context, model.User) (interface{}, error)
 	HandleUpdateUser(echo.Context, dto.UpdateUserDto, string) (*model.User, error)
 	HandleDeleteUser(echo.Context, string) error
 }
@@ -44,16 +43,6 @@ func (u UserService) HandleGetUserById(ctx echo.Context, id string) (*model.User
 	}
 
 	return user, nil
-}
-
-func (u UserService) HandleCreateUser(ctx echo.Context, dto model.User) (interface{}, error) {
-	objectId, err := u.UserRepository.CreateUser(ctx.Request().Context(), dto)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return objectId, nil
 }
 
 func (u UserService) HandleUpdateUser(ctx echo.Context, dto dto.UpdateUserDto, id string) (*model.User, error) {

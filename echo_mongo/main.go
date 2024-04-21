@@ -39,9 +39,16 @@ func main() {
 		UserService: userService,
 	}
 
+	authRepo := implement.NewAuthImplement(mongoDB.Client.Database(config.DBName))
+	authService := service.NewAuthService(authRepo)
+	authController := controller.AuthController{
+		AuthService: authService,
+	}
+
 	api := routes.API{
 		Echo:           e,
 		UserController: userController,
+		AuthController: authController,
 	}
 
 	api.SetUpRouter()
