@@ -1,8 +1,8 @@
 package service
 
 import (
-	"echo_mongo/constant"
 	dto "echo_mongo/dto/auth"
+	"echo_mongo/initializer"
 	model "echo_mongo/model/user"
 	"echo_mongo/repository"
 	"time"
@@ -27,6 +27,12 @@ func NewAuthService(authRepository repository.IAuthRepository) IAuthService {
 }
 
 func (s AuthService) HandleLogin(ctx echo.Context, data dto.LoginDto) (string, error) {
+	config, err := initializer.LoadConfig(".")
+
+	if err != nil {
+		return "", err
+	}
+
 	user, err := s.AuthRepository.Login(ctx.Request().Context(), data)
 
 	if err != nil {
@@ -43,7 +49,7 @@ func (s AuthService) HandleLogin(ctx echo.Context, data dto.LoginDto) (string, e
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	t, err := token.SignedString([]byte(constant.JWT_SECRET))
+	t, err := token.SignedString([]byte(config.JWTSecret))
 
 	if err != nil {
 		return "", err

@@ -11,6 +11,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/stripe/stripe-go/v78"
+	"github.com/stripe/stripe-go/v78/client"
 )
 
 func main() {
@@ -26,6 +28,11 @@ func main() {
 
 	mongoDB.Connect()
 	defer mongoDB.Close()
+
+	params := &stripe.ChargeParams{}
+	sc := &client.API{}
+	sc.Init(config.StripleKey, nil)
+	sc.Charges.Get("ch_3Ln3j02eZvKYlo2C0d5IZWuG", params)
 
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{

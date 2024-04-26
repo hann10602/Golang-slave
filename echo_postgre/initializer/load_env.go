@@ -3,12 +3,14 @@ package initializer
 import "github.com/spf13/viper"
 
 type Config struct {
-	ServerPort string `mapstructure:"PORT"`
-	UriAddress string `mapstructure:"URI_ADDRESS"`
-	DBName string `mapstructure:"DB_NAME"`
 	ClientOrigin string `mapstructure:"CLIENT_ORIGIN"`
-	JWTSecret string `mapstructure:"JWT_SECRET"`
-	StripleKey string `mapstructure:"STRIPE_KEY"`
+	ServerPort   string `mapstructure:"SERVER_PORT"`
+	DBHost       string `mapstructure:"DB_HOST"`
+	DBUser       string `mapstructure:"DB_USER"`
+	DBPassword   string `mapstructure:"DB_PASSWORD"`
+	DBPort       string `mapstructure:"DB_PORT"`
+	DBDBname     string `mapstructure:"DB_DBNAME"`
+	DBSslmode    string `mapstructure:"DB_SSLMODE"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
@@ -23,7 +25,7 @@ func LoadConfig(path string) (config Config, err error) {
 	}
 
 	if err = viper.Unmarshal(&config); err != nil {
-		return 
+		return
 	}
 
 	return
