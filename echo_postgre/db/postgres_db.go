@@ -1,6 +1,7 @@
 package db
 
 import (
+	"echo_postgre/model"
 	"fmt"
 	"log"
 
@@ -32,9 +33,15 @@ func NewConnection(config *Config) (*gorm.DB, error) {
 	if err != nil {
 		log.Fatal("Connect database failed...")
 
-		return db, err
+		return nil, err
 	}
 
-	log.Fatal("Connect database successfully...")
-	return db, err
+	if err = db.AutoMigrate(&model.Users{}, &model.Settings{}, &model.Orders{}, &model.Products{}); err != nil {
+		log.Fatal("Migrate entity failed...")
+
+		return nil, err
+	}
+
+	fmt.Println("Connect database successfully...")
+	return db, nil
 }
