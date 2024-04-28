@@ -2,7 +2,7 @@ package controller
 
 import (
 	"echo_postgre/common"
-	dto "echo_postgre/dto/req/settings"
+	dto "echo_postgre/dto/req"
 	"echo_postgre/service"
 	"net/http"
 
@@ -42,7 +42,7 @@ func (s SettingsController) UpdateSettings(ctx echo.Context) error {
 
 	if err := s.settingsService.HandleUpdateSettings(ctx, map[string]interface{}{
 		"id": id,
-	}, &settings); err != nil {
+	}, settings); err != nil {
 		return ctx.JSON(http.StatusBadRequest, &common.Response{
 			StatusCode: http.StatusBadRequest,
 			Message:    err.Error(),

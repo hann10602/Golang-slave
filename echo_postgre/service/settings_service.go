@@ -1,7 +1,7 @@
 package service
 
 import (
-	dto "echo_postgre/dto/req/settings"
+	dto "echo_postgre/dto/req"
 	"echo_postgre/repository"
 
 	"github.com/labstack/echo/v4"
@@ -12,7 +12,7 @@ type SettingsService struct {
 }
 
 type ISettingsService interface {
-	HandleUpdateSettings(echo.Context, map[string]interface{}, *dto.UpdateSettingsDTO) error
+	HandleUpdateSettings(echo.Context, map[string]interface{}, dto.UpdateSettingsDTO) error
 }
 
 func NewSettingsService(settingsRepository repository.ISettingsRepository) ISettingsService {
@@ -21,7 +21,7 @@ func NewSettingsService(settingsRepository repository.ISettingsRepository) ISett
 	}
 }
 
-func (s *SettingsService) HandleUpdateSettings(ctx echo.Context, cond map[string]interface{}, data *dto.UpdateSettingsDTO) error {
+func (s *SettingsService) HandleUpdateSettings(ctx echo.Context, cond map[string]interface{}, data dto.UpdateSettingsDTO) error {
 	if err := s.settingsRepository.Update(ctx.Request().Context(), cond, data); err != nil {
 		return err
 	}

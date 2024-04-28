@@ -3,7 +3,8 @@ package implement
 import (
 	"context"
 	"echo_postgre/common"
-	dto "echo_postgre/dto/req/users"
+	dto "echo_postgre/dto/req"
+	dtoResp "echo_postgre/dto/resp"
 	"echo_postgre/enum"
 	"echo_postgre/model"
 	"echo_postgre/repository"
@@ -39,14 +40,15 @@ func (u *UserImplement) Delete(ctx context.Context, cond map[string]interface{})
 	return nil
 }
 
-func (u *UserImplement) GetById(ctx context.Context, cond map[string]interface{}) (*model.Users, error) {
-	var user model.Users
+func (u *UserImplement) GetById(ctx context.Context, cond map[string]interface{}) (*dtoResp.UserResponseDTO, error) {
+	// var user model.Users
+	var dto dtoResp.UserResponseDTO
 
-	if err := u.db.Table(enum.USER_TABLE).Where(cond).First(&user).Error; err != nil {
+	if err := u.db.Table(enum.USER_TABLE).Where(cond).First(&dto).Error; err != nil {
 		return nil, err
 	}
 
-	return &user, nil
+	return &dto, nil
 }
 
 func (u *UserImplement) Search(ctx context.Context, filter common.Filter, paging common.Paging) (*[]model.Users, error) {

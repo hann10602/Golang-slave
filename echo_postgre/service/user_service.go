@@ -2,7 +2,8 @@ package service
 
 import (
 	"echo_postgre/common"
-	dto "echo_postgre/dto/req/users"
+	dtoRequest "echo_postgre/dto/req"
+	dtoResponse "echo_postgre/dto/resp"
 	"echo_postgre/model"
 	"echo_postgre/repository"
 
@@ -15,9 +16,9 @@ type UserService struct {
 }
 type IUserService interface {
 	HandleSearchUsers(echo.Context, common.Filter, common.Paging) (*[]model.Users, error)
-	HandleGetUserById(echo.Context, map[string]interface{}) (*model.Users, error)
-	HandleCreateUsers(echo.Context, dto.CreateUserDTO) error
-	HandleUpdateUsers(echo.Context, map[string]interface{}, dto.UpdateUserDTO) error
+	HandleGetUserById(echo.Context, map[string]interface{}) (*dtoResponse.UserResponseDTO, error)
+	HandleCreateUsers(echo.Context, dtoRequest.CreateUserDTO) error
+	HandleUpdateUsers(echo.Context, map[string]interface{}, dtoRequest.UpdateUserDTO) error
 	HandleDeleteUsers(echo.Context, map[string]interface{}) error
 }
 
@@ -28,7 +29,7 @@ func NewUserService(userRepository repository.IUserRepository, settingsRepositor
 	}
 }
 
-func (u *UserService) HandleCreateUsers(ctx echo.Context, data dto.CreateUserDTO) error {
+func (u *UserService) HandleCreateUsers(ctx echo.Context, data dtoRequest.CreateUserDTO) error {
 	userId, err := u.userRepository.Create(ctx.Request().Context(), data)
 
 	if err != nil && userId == 0 {
@@ -50,14 +51,30 @@ func (u *UserService) HandleDeleteUsers(ctx echo.Context, cond map[string]interf
 	return nil
 }
 
-func (u *UserService) HandleGetUserById(ctx echo.Context, cond map[string]interface{}) (*model.Users, error) {
-	data, err := u.userRepository.GetById(ctx.Request().Context(), cond)
+func (u *UserService) HandleGetUserById(ctx echo.Context, cond map[string]interface{}) (*dtoResponse.UserResponseDTO, error) {
+	userData, err := u.userRepository.GetById(ctx.Request().Context(), cond)
+	// settingsData, err := u.settingsRepository.GetByUserId(ctx.Request().Context(), userData.Id)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return data, nil
+	// response := &dtoResponse.UserResponseDTO{
+	// 	Id:       userData.Id,
+	// 	Username: userData.Username,
+	// 	Password: userData.Password,
+	// 	Role:     userData.Role,
+	// 	Status:   userData.Status,
+	// 	Settings: dtoResponse.SettingsResponseDTO{
+	// 		IsNotification:   settingsData.IsNotification,
+	// 		IsReceiveMessage: settingsData.IsReceiveMessage,
+	// 		Language:         settingsData.Language,
+	// 	},
+	// }
+
+	// fmt.Println(response)
+
+	return userData, nil
 }
 
 func (u *UserService) HandleSearchUsers(ctx echo.Context, filter common.Filter, paging common.Paging) (*[]model.Users, error) {
@@ -69,7 +86,7 @@ func (u *UserService) HandleSearchUsers(ctx echo.Context, filter common.Filter, 
 	return data, nil
 }
 
-func (u *UserService) HandleUpdateUsers(ctx echo.Context, cond map[string]interface{}, data dto.UpdateUserDTO) error {
+func (u *UserService) HandleUpdateUsers(ctx echo.Context, cond map[string]interface{}, data dtoRequest.UpdateUserDTO) error {
 	if err := u.userRepository.Update(ctx.Request().Context(), cond, data); err != nil {
 		return err
 	}

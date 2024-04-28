@@ -2,7 +2,7 @@ package controller
 
 import (
 	"echo_postgre/common"
-	dto "echo_postgre/dto/req/users"
+	dto "echo_postgre/dto/req"
 	"echo_postgre/service"
 	"fmt"
 	"net/http"
