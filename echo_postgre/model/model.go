@@ -17,9 +17,9 @@ type (
 
 	Settings struct {
 		common.SQLModel
-		IsNotification   bool   `json:"isNotification" gorm:"notnull"`
-		IsReceiveMessage bool   `json:"isReceiveMessage" gorm:"notnull"`
-		Language         string `json:"language" gorm:"notnull"`
+		IsNotification   bool   `json:"isNotification" gorm:"notnull;default:false"`
+		IsReceiveMessage bool   `json:"isReceiveMessage" gorm:"notnull;default:false"`
+		Language         string `json:"language" gorm:"notnull;default:'en'"`
 		UserId           uint   `json:"-"`
 	}
 

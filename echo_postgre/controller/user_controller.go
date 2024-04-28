@@ -2,52 +2,129 @@ package controller
 
 import (
 	"echo_postgre/common"
+	dto "echo_postgre/dto/req/users"
 	"echo_postgre/service"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
-type IUserController interface {
-	SearchUser(echo.Context) error
-	GetUserById(echo.Context) error
-	CreateUser(echo.Context) error
-	UpdateUser(echo.Context) error
-	DeleteUser(echo.Context) error
-}
-
 type UserController struct {
 	userService service.IUserService
 }
 
-func NewUserController(userService service.IUserService) IUserController {
-	return &UserController{
+func NewUserController(userService service.IUserService) UserController {
+	return UserController{
 		userService: userService,
 	}
 }
 
-func (u *UserController) CreateUser(ctx echo.Context) error {
+func (u UserController) CreateUser(ctx echo.Context) error {
+	var user dto.CreateUserDTO
+
+	if err := ctx.Bind(&user); err != nil {
+		return ctx.JSON(http.StatusBadRequest, &common.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    err.Error(),
+			Data:       false,
+		})
+	}
+
+	fmt.Println(user.Status)
+
+	if err := u.userService.HandleCreateUsers(ctx, user); err != nil {
+		return ctx.JSON(http.StatusBadRequest, &common.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    err.Error(),
+			Data:       false,
+		})
+	}
+
+	return ctx.JSON(http.StatusOK, &common.Response{
+		StatusCode: http.StatusOK,
+		Message:    "Created user successfully",
+		Data:       true,
+	})
 }
 
-func (u *UserController) DeleteUser(ctx echo.Context) error {
-	panic("unimplemented")
+func (u UserController) DeleteUser(ctx echo.Context) error {
+	userId := ctx.Param("id")
+
+	if userId == "" {
+		return ctx.JSON(http.StatusBadRequest, &common.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Cannot received user id",
+			Data:       false,
+		})
+	}
+
+	if err := u.userService.HandleDeleteUsers(ctx, map[string]interface{}{
+		"id": userId,
+	}); err != nil {
+		return ctx.JSON(http.StatusBadRequest, &common.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    err.Error(),
+			Data:       false,
+		})
+	}
+
+	return ctx.JSON(http.StatusOK, &common.Response{
+		StatusCode: http.StatusOK,
+		Message:    "Deleted user successfully",
+		Data:       true,
+	})
 }
 
-func (u *UserController) GetUserById(ctx echo.Context) error {
-	panic("unimplemented")
-}
+func (u UserController) GetUserById(ctx echo.Context) error {
+	userId := ctx.Param("id")
 
-func (u *UserController) SearchUser(ctx echo.Context) error {
-	filter := ctx.Bind("filter")
-	paging := ctx.FormValue("paging")
+	if userId == "" {
+		return ctx.JSON(http.StatusBadRequest, &common.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Cannot received user id",
+			Data:       false,
+		})
+	}
 
-	data, err := u.userService.HandleSearchUsers(ctx, &filter, &paging)
+	user, err := u.userService.HandleGetUserById(ctx, map[string]interface{}{
+		"id": userId,
+	})
 
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, &common.Response{
 			StatusCode: http.StatusBadRequest,
 			Message:    err.Error(),
-			Data:       nil,
+			Data:       false,
+		})
+	}
+
+	return ctx.JSON(http.StatusOK, &common.Response{
+		StatusCode: http.StatusOK,
+		Message:    "Get user successfully",
+		Data:       user,
+	})
+}
+
+func (u UserController) SearchUser(ctx echo.Context) error {
+	// filter := ctx.Bind("filter")
+	// paging := ctx.FormValue("paging")
+
+	filter := common.Filter{
+		Status: "ACTIVE",
+	}
+
+	paging := common.Paging{
+		Page: 1,
+	}
+
+	data, err := u.userService.HandleSearchUsers(ctx, filter, paging)
+
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, &common.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    err.Error(),
+			Data:       false,
 		})
 	}
 
@@ -58,6 +135,42 @@ func (u *UserController) SearchUser(ctx echo.Context) error {
 	})
 }
 
-func (u *UserController) UpdateUser(ctx echo.Context) error {
-	panic("unimplemented")
+func (u UserController) UpdateUser(ctx echo.Context) error {
+	var user dto.UpdateUserDTO
+
+	if err := ctx.Bind(&user); err != nil {
+		return ctx.JSON(http.StatusBadRequest, &common.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    err.Error(),
+			Data:       false,
+		})
+	}
+
+	userId := ctx.Param("id")
+
+	if userId == "" {
+		return ctx.JSON(http.StatusBadRequest, &common.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Cannot received user id",
+			Data:       false,
+		})
+	}
+
+	err := u.userService.HandleUpdateUsers(ctx, map[string]interface{}{
+		"id": userId,
+	}, user)
+
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, &common.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    err.Error(),
+			Data:       false,
+		})
+	}
+
+	return ctx.JSON(http.StatusOK, &common.Response{
+		StatusCode: http.StatusOK,
+		Message:    "Updated user successfully",
+		Data:       true,
+	})
 }

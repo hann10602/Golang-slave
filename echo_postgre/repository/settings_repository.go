@@ -6,6 +6,6 @@ import (
 )
 
 type ISettingsRepository interface {
+	Create(context.Context, uint) error
 	Update(context.Context, map[string]interface{}, *dto.UpdateSettingsDTO) error
-	// Delete(context.Context, map[string]interface{}) error
 }

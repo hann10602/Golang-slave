@@ -3,11 +3,10 @@ package main
 import (
 	"echo_postgre/db"
 	"echo_postgre/initializer"
-	"fmt"
+	"echo_postgre/route"
 	"log"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -23,21 +22,25 @@ func main() {
 		Password: config.DBPassword,
 		Port:     config.DBPort,
 		DBName:   config.DBDBname,
-		SSLMode:  config.DBSslmode,
+		SSLMode:  config.DBSSLMode,
 	})
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(db)
+	userController := InitializeUserController(db)
+	settingsController := InitializeSettingsController(db)
 
 	e := echo.New()
 
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{config.ClientOrigin},
-		AllowCredentials: true,
-	}))
+	api := &route.API{
+		Echo:               e,
+		UserController:     userController,
+		SettingsController: settingsController,
+	}
+
+	api.SetUpRouter()
 
 	e.Logger.Fatal(e.Start(":" + config.ServerPort))
 }

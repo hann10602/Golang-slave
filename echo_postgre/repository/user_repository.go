@@ -8,9 +8,9 @@ import (
 )
 
 type IUserRepository interface {
-	Search(context.Context, *common.Filter, *common.Paging) (*[]model.Users, error)
+	Search(context.Context, common.Filter, common.Paging) (*[]model.Users, error)
 	GetById(context.Context, map[string]interface{}) (*model.Users, error)
-	Create(context.Context, *dto.CreateUserDTO) error
-	Update(context.Context, map[string]interface{}, *dto.UpdateUserDTO) error
+	Create(context.Context, dto.CreateUserDTO) (uint, error)
+	Update(context.Context, map[string]interface{}, dto.UpdateUserDTO) error
 	Delete(context.Context, map[string]interface{}) error
 }

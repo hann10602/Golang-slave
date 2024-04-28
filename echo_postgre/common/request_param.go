@@ -1,7 +1,9 @@
 package common
 
 type Filter struct {
-	Status string `json:"status" form:"status"`
+	Status   string `json:"status" form:"status"`
+	Username string `json:"username" form:"username"`
+	Role     string `json:"role" form:"role"`
 }
 
 type Paging struct {

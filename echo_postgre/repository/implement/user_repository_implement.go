@@ -21,17 +21,12 @@ func NewUserImplement(db *gorm.DB) repository.IUserRepository {
 	}
 }
 
-func (u *UserImplement) Create(ctx context.Context, data *dto.CreateUserDTO) error {
-	data.Settings = &model.Settings{
-		IsNotification:   false,
-		IsReceiveMessage: false,
-		Language:         "en",
-	}
+func (u *UserImplement) Create(ctx context.Context, data dto.CreateUserDTO) (uint, error) {
 	if err := u.db.Table(enum.USER_TABLE).Create(&data).Error; err != nil {
-		return err
+		return data.Id, err
 	}
 
-	return nil
+	return data.Id, nil
 }
 
 func (u *UserImplement) Delete(ctx context.Context, cond map[string]interface{}) error {
@@ -54,17 +49,17 @@ func (u *UserImplement) GetById(ctx context.Context, cond map[string]interface{}
 	return &user, nil
 }
 
-func (u *UserImplement) Search(ctx context.Context, filter *common.Filter, paging *common.Paging) (*[]model.Users, error) {
+func (u *UserImplement) Search(ctx context.Context, filter common.Filter, paging common.Paging) (*[]model.Users, error) {
 	var users []model.Users
 
-	if err := u.db.Table(enum.USER_TABLE).Where("status <> ?", "DELETED").Find(&users).Error; err != nil {
+	if err := u.db.Table(enum.USER_TABLE).Preload("Settings").Where("status <> ?", "DELETED").Find(&users).Error; err != nil {
 		return nil, err
 	}
 
 	return &users, nil
 }
 
-func (u *UserImplement) Update(ctx context.Context, cond map[string]interface{}, data *dto.UpdateUserDTO) error {
+func (u *UserImplement) Update(ctx context.Context, cond map[string]interface{}, data dto.UpdateUserDTO) error {
 	if err := u.db.Table(enum.USER_TABLE).Where(cond).Updates(&data).Error; err != nil {
 		return err
 	}

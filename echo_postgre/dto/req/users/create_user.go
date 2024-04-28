@@ -1,11 +1,12 @@
 package dto
 
-import "echo_postgre/model"
+import "time"
 
 type CreateUserDTO struct {
-	Username string `json:"username" gorm:"column:username"`
-	Password string `json:"password" gorm:"column:password"`
-	Role     string `json:"role,omitempty" gorm:"column:role;defaul:USER"`
-	Status   string `json:"status" gorm:"column:status;defaul:ACTIVE"`
-	Settings *model.Settings
+	Id        uint       `json:"id" gorm:"column:id"`
+	Username  string     `json:"username" gorm:"column:username"`
+	Password  string     `json:"password" gorm:"column:password"`
+	Role      string     `json:"role,omitempty" gorm:"default:'USER';column:role"`
+	Status    string     `json:"status,omitempty" gorm:"default:'ACTIVE';column:status"`
+	CreatedAt *time.Time `json:"createdAt,omitempty" gorm:"column:created_at"`
 }

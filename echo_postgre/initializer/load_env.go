@@ -10,7 +10,7 @@ type Config struct {
 	DBPassword   string `mapstructure:"DB_PASSWORD"`
 	DBPort       string `mapstructure:"DB_PORT"`
 	DBDBname     string `mapstructure:"DB_DBNAME"`
-	DBSslmode    string `mapstructure:"DB_SSLMODE"`
+	DBSSLMode    string `mapstructure:"DB_SSLMODE"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
