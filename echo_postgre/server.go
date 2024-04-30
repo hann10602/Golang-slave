@@ -31,6 +31,7 @@ func main() {
 
 	userController := InitializeUserController(db)
 	settingsController := InitializeSettingsController(db)
+	authController := InitializeAuthController(db)
 
 	e := echo.New()
 
@@ -38,6 +39,7 @@ func main() {
 		Echo:               e,
 		UserController:     userController,
 		SettingsController: settingsController,
+		AuthController:     authController,
 	}
 
 	api.SetUpRouter()

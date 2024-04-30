@@ -36,7 +36,13 @@ func NewConnection(config *Config) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	if err = db.AutoMigrate(&model.Users{}, &model.Settings{}, &model.Orders{}, &model.Products{}); err != nil {
+	if err := db.SetupJoinTable(&model.Products{}, "Orders", &model.OrderProducts{}); err != nil {
+		log.Fatal(err)
+
+		return nil, err
+	}
+
+	if err = db.AutoMigrate(&model.Users{}, &model.Settings{}, &model.Orders{}, &model.Products{}, &model.OrderProducts{}); err != nil {
 		log.Fatal("Migrate entity failed...")
 
 		return nil, err

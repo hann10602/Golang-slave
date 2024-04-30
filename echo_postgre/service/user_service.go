@@ -11,36 +11,19 @@ import (
 )
 
 type UserService struct {
-	userRepository     repository.IUserRepository
-	settingsRepository repository.ISettingsRepository
+	userRepository repository.IUserRepository
 }
 type IUserService interface {
 	HandleSearchUsers(echo.Context, common.Filter, common.Paging) (*[]model.Users, error)
 	HandleGetUserById(echo.Context, map[string]interface{}) (*dtoResponse.UserResponseDTO, error)
-	HandleCreateUsers(echo.Context, dtoRequest.CreateUserDTO) error
 	HandleUpdateUsers(echo.Context, map[string]interface{}, dtoRequest.UpdateUserDTO) error
 	HandleDeleteUsers(echo.Context, map[string]interface{}) error
 }
 
-func NewUserService(userRepository repository.IUserRepository, settingsRepository repository.ISettingsRepository) IUserService {
+func NewUserService(userRepository repository.IUserRepository) IUserService {
 	return &UserService{
-		userRepository:     userRepository,
-		settingsRepository: settingsRepository,
+		userRepository: userRepository,
 	}
-}
-
-func (u *UserService) HandleCreateUsers(ctx echo.Context, data dtoRequest.CreateUserDTO) error {
-	userId, err := u.userRepository.Create(ctx.Request().Context(), data)
-
-	if err != nil && userId == 0 {
-		return err
-	}
-
-	if err := u.settingsRepository.Create(ctx.Request().Context(), userId); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (u *UserService) HandleDeleteUsers(ctx echo.Context, cond map[string]interface{}) error {
@@ -53,26 +36,10 @@ func (u *UserService) HandleDeleteUsers(ctx echo.Context, cond map[string]interf
 
 func (u *UserService) HandleGetUserById(ctx echo.Context, cond map[string]interface{}) (*dtoResponse.UserResponseDTO, error) {
 	userData, err := u.userRepository.GetById(ctx.Request().Context(), cond)
-	// settingsData, err := u.settingsRepository.GetByUserId(ctx.Request().Context(), userData.Id)
 
 	if err != nil {
 		return nil, err
 	}
-
-	// response := &dtoResponse.UserResponseDTO{
-	// 	Id:       userData.Id,
-	// 	Username: userData.Username,
-	// 	Password: userData.Password,
-	// 	Role:     userData.Role,
-	// 	Status:   userData.Status,
-	// 	Settings: dtoResponse.SettingsResponseDTO{
-	// 		IsNotification:   settingsData.IsNotification,
-	// 		IsReceiveMessage: settingsData.IsReceiveMessage,
-	// 		Language:         settingsData.Language,
-	// 	},
-	// }
-
-	// fmt.Println(response)
 
 	return userData, nil
 }

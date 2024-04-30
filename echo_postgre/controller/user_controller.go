@@ -4,7 +4,6 @@ import (
 	"echo_postgre/common"
 	dto "echo_postgre/dto/req"
 	"echo_postgre/service"
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -18,34 +17,6 @@ func NewUserController(userService service.IUserService) UserController {
 	return UserController{
 		userService: userService,
 	}
-}
-
-func (u UserController) CreateUser(ctx echo.Context) error {
-	var user dto.CreateUserDTO
-
-	if err := ctx.Bind(&user); err != nil {
-		return ctx.JSON(http.StatusBadRequest, &common.Response{
-			StatusCode: http.StatusBadRequest,
-			Message:    err.Error(),
-			Data:       false,
-		})
-	}
-
-	fmt.Println(user.Status)
-
-	if err := u.userService.HandleCreateUsers(ctx, user); err != nil {
-		return ctx.JSON(http.StatusBadRequest, &common.Response{
-			StatusCode: http.StatusBadRequest,
-			Message:    err.Error(),
-			Data:       false,
-		})
-	}
-
-	return ctx.JSON(http.StatusOK, &common.Response{
-		StatusCode: http.StatusOK,
-		Message:    "Created user successfully",
-		Data:       true,
-	})
 }
 
 func (u UserController) DeleteUser(ctx echo.Context) error {

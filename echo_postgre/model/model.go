@@ -26,7 +26,7 @@ type (
 	Orders struct {
 		common.SQLModel
 		Quantity bool        `json:"quantity" gorm:"notnull"`
-		Products []*Products `gorm:"many2many"`
+		Products []*Products `gorm:"many2many:order_products"`
 		UserId   uint        `json:"-"`
 	}
 
@@ -35,7 +35,13 @@ type (
 		Name      uint      `json:"name" gorm:"notnull"`
 		Inventory uint      `json:"inventory" gorm:"notnull"`
 		Price     uint      `json:"price" gorm:"notnull"`
-		Orders    []*Orders `gorm:"many2many"`
-		UserId    uint      `json:"-"`
+		Orders    []*Orders `gorm:"many2many:order_products"`
+	}
+
+	OrderProducts struct {
+		common.SQLModel
+		Quantity   uint `json:"quantity" gorm:"notnull"`
+		OrdersId   uint `json:"orderId" gorm:"notnull"`
+		ProductsId uint `json:"productId" gorm:"notnull"`
 	}
 )

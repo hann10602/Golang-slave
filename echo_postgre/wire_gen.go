@@ -17,8 +17,7 @@ import (
 
 func InitializeUserController(db *gorm.DB) controller.UserController {
 	iUserRepository := implement.NewUserImplement(db)
-	iSettingsRepository := implement.NewSettingsImplement(db)
-	iUserService := service.NewUserService(iUserRepository, iSettingsRepository)
+	iUserService := service.NewUserService(iUserRepository)
 	userController := controller.NewUserController(iUserService)
 	return userController
 }
@@ -28,4 +27,12 @@ func InitializeSettingsController(db *gorm.DB) controller.SettingsController {
 	iSettingsService := service.NewSettingsService(iSettingsRepository)
 	settingsController := controller.NewSettingsController(iSettingsService)
 	return settingsController
+}
+
+func InitializeAuthController(db *gorm.DB) controller.AuthController {
+	iUserRepository := implement.NewUserImplement(db)
+	iSettingsRepository := implement.NewSettingsImplement(db)
+	iAuthService := service.NewAuthService(iUserRepository, iSettingsRepository)
+	authController := controller.NewAuthController(iAuthService)
+	return authController
 }

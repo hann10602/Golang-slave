@@ -8,10 +8,9 @@ import (
 	"echo_postgre/model"
 )
 
-type IUserRepository interface {
+type IProductRepository interface {
 	Search(context.Context, common.Filter, common.Paging) (*[]model.Users, error)
 	GetById(context.Context, map[string]interface{}) (*dtoResponse.UserResponseDTO, error)
-	GetByUsernameAndPassword(context.Context, map[string]interface{}) (*model.Users, error)
 	Create(context.Context, dtoRequest.CreateUserDTO) (uint, error)
 	Update(context.Context, map[string]interface{}, dtoRequest.UpdateUserDTO) error
 	Delete(context.Context, map[string]interface{}) error

@@ -30,6 +30,16 @@ func (u *UserImplement) Create(ctx context.Context, data dto.CreateUserDTO) (uin
 	return data.Id, nil
 }
 
+func (u *UserImplement) GetByUsernameAndPassword(ctx context.Context, cond map[string]interface{}) (*model.Users, error) {
+	var user model.Users
+
+	if err := u.db.Table(enum.USER_TABLE).Where(cond).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 func (u *UserImplement) Delete(ctx context.Context, cond map[string]interface{}) error {
 	if err := u.db.Table(enum.USER_TABLE).Where(cond).Updates(map[string]interface{}{
 		"status": "DELETED",
@@ -41,11 +51,24 @@ func (u *UserImplement) Delete(ctx context.Context, cond map[string]interface{})
 }
 
 func (u *UserImplement) GetById(ctx context.Context, cond map[string]interface{}) (*dtoResp.UserResponseDTO, error) {
-	// var user model.Users
-	var dto dtoResp.UserResponseDTO
+	var user model.Users
 
-	if err := u.db.Table(enum.USER_TABLE).Where(cond).First(&dto).Error; err != nil {
+	if err := u.db.Table(enum.USER_TABLE).Preload("Settings").Where(cond).First(&user).Error; err != nil {
 		return nil, err
+	}
+
+	dto := dtoResp.UserResponseDTO{
+		Id:        user.Id,
+		Username:  user.Username,
+		Role:      user.Role,
+		Status:    user.Status,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		Settings: dtoResp.SettingsResponseDTO{
+			IsNotification:   user.Settings.IsNotification,
+			IsReceiveMessage: user.Settings.IsReceiveMessage,
+			Language:         user.Settings.Language,
+		},
 	}
 
 	return &dto, nil

@@ -1,10 +1,14 @@
 package dto
 
+import "time"
+
 type UserResponseDTO struct {
-	Id       uint                `json:"id" gorm:"column:id"`
-	Username string              `json:"username" gorm:"column:username"`
-	Password string              `json:"password" gorm:"column:password"`
-	Role     string              `json:"role" gorm:"column:role"`
-	Status   string              `json:"status" gorm:"column:status"`
-	Settings SettingsResponseDTO `json:"settings"`
+	Id        uint                `json:"id"`
+	Username  string              `json:"username"`
+	Password  string              `json:"password"`
+	Role      string              `json:"role"`
+	Status    string              `json:"status"`
+	CreatedAt *time.Time          `json:"createdAt"`
+	UpdatedAt *time.Time          `json:"updatedAt"`
+	Settings  SettingsResponseDTO `json:"settings"`
 }

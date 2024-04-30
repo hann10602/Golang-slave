@@ -13,11 +13,16 @@ import (
 )
 
 func InitializeUserController(db *gorm.DB) controller.UserController {
-	wire.Build(implement.NewUserImplement, implement.NewSettingsImplement, service.NewUserService, controller.NewUserController)
+	wire.Build(implement.NewUserImplement, service.NewUserService, controller.NewUserController)
 	return controller.UserController{}
 }
 
 func InitializeSettingsController(db *gorm.DB) controller.SettingsController {
 	wire.Build(implement.NewSettingsImplement, service.NewSettingsService, controller.NewSettingsController)
 	return controller.SettingsController{}
+}
+
+func InitializeAuthController(db *gorm.DB) controller.AuthController {
+	wire.Build(implement.NewUserImplement, implement.NewSettingsImplement, service.NewAuthService, controller.NewAuthController)
+	return controller.AuthController{}
 }
