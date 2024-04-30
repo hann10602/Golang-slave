@@ -28,9 +28,17 @@ func VerifyToken(next echo.HandlerFunc) echo.HandlerFunc {
 			return []byte(config.JWTSecret), nil
 		}
 
+		if tokenString[0] != "Bearer" || len(tokenString) < 2 {
+			return c.JSON(http.StatusUnauthorized, common.Response{
+				StatusCode: http.StatusUnauthorized,
+				Message:    "Token is invalid",
+				Data:       nil,
+			})
+		}
+
 		_, err = jwt.Parse(tokenString[1], verifySecretKey)
 
-		if tokenString[0] != "Bearer" || err != nil {
+		if err != nil {
 			return c.JSON(http.StatusUnauthorized, common.Response{
 				StatusCode: http.StatusUnauthorized,
 				Message:    "Token is invalid",
