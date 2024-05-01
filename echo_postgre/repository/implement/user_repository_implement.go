@@ -3,7 +3,7 @@ package implement
 import (
 	"context"
 	"echo_postgre/common"
-	dto "echo_postgre/dto/req"
+	dtoReq "echo_postgre/dto/req"
 	dtoResp "echo_postgre/dto/resp"
 	"echo_postgre/enum"
 	"echo_postgre/model"
@@ -22,7 +22,7 @@ func NewUserImplement(db *gorm.DB) repository.IUserRepository {
 	}
 }
 
-func (u *UserImplement) Create(ctx context.Context, data dto.CreateUserDTO) (uint, error) {
+func (u *UserImplement) Create(ctx context.Context, data dtoReq.CreateUserDTO) (uint, error) {
 	if err := u.db.Table(enum.USER_TABLE).Create(&data).Error; err != nil {
 		return data.Id, err
 	}
@@ -50,51 +50,45 @@ func (u *UserImplement) Delete(ctx context.Context, cond map[string]interface{})
 	return nil
 }
 
-func (u *UserImplement) GetById(ctx context.Context, cond map[string]interface{}) (*dtoResp.UserResponseDTO, error) {
-	var user model.Users
+func (u *UserImplement) GetById(ctx context.Context, id uint) (*dtoResp.UserResponseDTO, error) {
+	dto := dtoResp.UserResponseDTO{}
 
-	if err := u.db.Table(enum.USER_TABLE).Preload("Settings").Where(cond).First(&user).Error; err != nil {
+	if err := u.db.Table(enum.USER_TABLE).Select("users.id, users.username, users.password, users.role, users.status, users.created_at, users.updated_at, settings.is_notification, settings.is_receive_message, settings.language").Joins("LEFT JOIN settings on users.id = settings.user_id").Where("users.id = ?", id).Scan(&dto).Error; err != nil {
 		return nil, err
-	}
-
-	dto := dtoResp.UserResponseDTO{
-		Id:        user.Id,
-		Username:  user.Username,
-		Role:      user.Role,
-		Status:    user.Status,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-		Settings: dtoResp.SettingsResponseDTO{
-			IsNotification:   user.Settings.IsNotification,
-			IsReceiveMessage: user.Settings.IsReceiveMessage,
-			Language:         user.Settings.Language,
-		},
 	}
 
 	return &dto, nil
 }
 
-func (u *UserImplement) Search(ctx context.Context, filter *common.Filter, paging *common.Paging) (*[]model.Users, error) {
-	var users []model.Users
+func (u *UserImplement) Search(ctx context.Context, filter *common.Filter, paging *common.Paging) (*[]dtoResp.UserResponseDTO, error) {
+	var dto []dtoResp.UserResponseDTO
 
 	u.db.Table(enum.USER_TABLE).Preload("Settings").Where("status <> ?", "DELETED")
 
 	if filter != nil {
-		u.db = u.db.Where(filter)
+		if filter.Role != "" {
+			u.db = u.db.Where("users.role = ?", filter.Role)
+		}
+		if filter.Status != "" {
+			u.db = u.db.Where("users.status = ?", filter.Status)
+		}
+		if filter.Username != "" {
+			u.db = u.db.Where("users.username = ?", filter.Username)
+		}
 	}
 
 	if err := u.db.Table(enum.USER_TABLE).Count(&paging.Total).Error; err != nil {
 		return nil, err
 	}
 
-	if err := u.db.Table(enum.USER_TABLE).Offset((paging.Page - 1) * paging.Limit).Limit(paging.Limit).Find(&users).Error; err != nil {
+	if err := u.db.Table(enum.USER_TABLE).Select("users.id, users.username, users.password, users.role, users.status, users.created_at, users.updated_at, settings.is_notification, settings.is_receive_message, settings.language").Joins("LEFT JOIN settings on users.id = settings.user_id").Offset((paging.Page - 1) * paging.Limit).Limit(paging.Limit).Scan(&dto).Error; err != nil {
 		return nil, err
 	}
 
-	return &users, nil
+	return &dto, nil
 }
 
-func (u *UserImplement) Update(ctx context.Context, cond map[string]interface{}, data dto.UpdateUserDTO) error {
+func (u *UserImplement) Update(ctx context.Context, cond map[string]interface{}, data dtoReq.UpdateUserDTO) error {
 	if err := u.db.Table(enum.USER_TABLE).Where(cond).Updates(&data).Error; err != nil {
 		return err
 	}

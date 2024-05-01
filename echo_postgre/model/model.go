@@ -32,10 +32,12 @@ type (
 
 	Products struct {
 		common.SQLModel
-		Name      uint      `json:"name" gorm:"notnull"`
-		Inventory uint      `json:"inventory" gorm:"notnull"`
-		Price     uint      `json:"price" gorm:"notnull"`
-		Orders    []*Orders `gorm:"many2many:order_products"`
+		Name        string    `json:"name" gorm:"notnull"`
+		Description string    `json:"description" gorm:"notnull"`
+		Inventory   uint      `json:"inventory" gorm:"notnull"`
+		Price       uint      `json:"price" gorm:"notnull"`
+		Thumbnail   string    `json:"thumbnail"`
+		Orders      []*Orders `gorm:"many2many:order_products"`
 	}
 
 	OrderProducts struct {

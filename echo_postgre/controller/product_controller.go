@@ -10,29 +10,29 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type UserController struct {
-	userService service.IUserService
+type ProductController struct {
+	productService service.IProductService
 }
 
-func NewUserController(userService service.IUserService) UserController {
-	return UserController{
-		userService: userService,
+func NewProductController(productService service.IProductService) ProductController {
+	return ProductController{
+		productService: productService,
 	}
 }
 
-func (u UserController) DeleteUser(ctx echo.Context) error {
-	userId := ctx.Param("id")
+func (u ProductController) DeleteProduct(ctx echo.Context) error {
+	productId := ctx.Param("id")
 
-	if userId == "" {
+	if productId == "" {
 		return ctx.JSON(http.StatusBadRequest, &common.Response{
 			StatusCode: http.StatusBadRequest,
-			Message:    "Cannot received user id",
+			Message:    "Cannot received product id",
 			Data:       false,
 		})
 	}
 
-	if err := u.userService.HandleDeleteUser(ctx, map[string]interface{}{
-		"id": userId,
+	if err := u.productService.HandleDeleteProduct(ctx, map[string]interface{}{
+		"id": productId,
 	}); err != nil {
 		return ctx.JSON(http.StatusBadRequest, &common.Response{
 			StatusCode: http.StatusBadRequest,
@@ -43,23 +43,23 @@ func (u UserController) DeleteUser(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, &common.Response{
 		StatusCode: http.StatusOK,
-		Message:    "Deleted user successfully",
+		Message:    "Deleted product successfully",
 		Data:       true,
 	})
 }
 
-func (u UserController) GetUserById(ctx echo.Context) error {
-	userId, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
+func (u ProductController) GetProductById(ctx echo.Context) error {
+	productId, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
 
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, &common.Response{
 			StatusCode: http.StatusBadRequest,
-			Message:    "Cannot received user id",
+			Message:    "Cannot received product id",
 			Data:       false,
 		})
 	}
 
-	user, err := u.userService.HandleGetUserById(ctx, uint(userId))
+	product, err := u.productService.HandleGetProductById(ctx, uint(productId))
 
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, &common.Response{
@@ -71,12 +71,12 @@ func (u UserController) GetUserById(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, &common.Response{
 		StatusCode: http.StatusOK,
-		Message:    "Get user successfully",
-		Data:       user,
+		Message:    "Get product successfully",
+		Data:       product,
 	})
 }
 
-func (u UserController) SearchUser(ctx echo.Context) error {
+func (u ProductController) SearchProduct(ctx echo.Context) error {
 	var paging common.Paging
 	var filter common.Filter
 
@@ -102,7 +102,7 @@ func (u UserController) SearchUser(ctx echo.Context) error {
 
 	paging.Process()
 
-	data, err := u.userService.HandleSearchUsers(ctx, &filter, &paging)
+	data, err := u.productService.HandleSearchProducts(ctx, &filter, &paging)
 
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, &common.Response{
@@ -114,15 +114,15 @@ func (u UserController) SearchUser(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, &common.Response{
 		StatusCode: http.StatusOK,
-		Message:    "Search users successfully",
+		Message:    "Search products successfully",
 		Data:       common.HandleResponseWithPagination(data, paging),
 	})
 }
 
-func (u UserController) UpdateUser(ctx echo.Context) error {
-	var user dtoReq.UpdateUserDTO
+func (u ProductController) UpdateProduct(ctx echo.Context) error {
+	var product dtoReq.UpdateProductDTO
 
-	if err := ctx.Bind(&user); err != nil {
+	if err := ctx.Bind(&product); err != nil {
 		return ctx.JSON(http.StatusBadRequest, &common.Response{
 			StatusCode: http.StatusBadRequest,
 			Message:    err.Error(),
@@ -130,19 +130,19 @@ func (u UserController) UpdateUser(ctx echo.Context) error {
 		})
 	}
 
-	userId := ctx.Param("id")
+	productId := ctx.Param("id")
 
-	if userId == "" {
+	if productId == "" {
 		return ctx.JSON(http.StatusBadRequest, &common.Response{
 			StatusCode: http.StatusBadRequest,
-			Message:    "Cannot received user id",
+			Message:    "Cannot received product id",
 			Data:       false,
 		})
 	}
 
-	err := u.userService.HandleUpdateUser(ctx, map[string]interface{}{
-		"id": userId,
-	}, user)
+	err := u.productService.HandleUpdateProduct(ctx, map[string]interface{}{
+		"id": productId,
+	}, product)
 
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, &common.Response{
@@ -154,7 +154,7 @@ func (u UserController) UpdateUser(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, &common.Response{
 		StatusCode: http.StatusOK,
-		Message:    "Updated user successfully",
+		Message:    "Updated product successfully",
 		Data:       true,
 	})
 }

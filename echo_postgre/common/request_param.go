@@ -3,9 +3,9 @@ package common
 type DefaultBinder struct{}
 
 type Filter struct {
-	Status   string `json:"status" query:"status""`
-	Username string `json:"username" query:"username""`
-	Role     string `json:"role" query:"role""`
+	Status   string `json:"status" query:"status"`
+	Username string `json:"username" query:"username"`
+	Role     string `json:"role" query:"role"`
 }
 
 type Paging struct {

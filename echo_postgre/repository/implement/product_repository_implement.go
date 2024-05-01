@@ -3,8 +3,8 @@ package implement
 import (
 	"context"
 	"echo_postgre/common"
-	dtoRequest "echo_postgre/dto/req"
-	dtoResponse "echo_postgre/dto/resp"
+	dtoReq "echo_postgre/dto/req"
+	dtoResp "echo_postgre/dto/resp"
 	"echo_postgre/enum"
 	"echo_postgre/model"
 	"echo_postgre/repository"
@@ -22,24 +22,34 @@ func NewProductRepository(db *gorm.DB) repository.IProductRepository {
 	}
 }
 
-// Create implements repository.IProductRepository.
-func (p *ProductRepository) Create(ctx context.Context, data dtoRequest.CreateProductDTO) (uint, error) {
-	panic("unimplemented")
+func (p *ProductRepository) Create(ctx context.Context, data dtoReq.CreateProductDTO) error {
+	if err := p.db.Table(enum.PRODUCT_TABLE).Create(&data).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
-// Delete implements repository.IProductRepository.
 func (p *ProductRepository) Delete(ctx context.Context, cond map[string]interface{}) error {
-	panic("unimplemented")
+	if err := p.db.Table(enum.PRODUCT_TABLE).Delete(&model.Users{}, cond).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
-// GetById implements repository.IProductRepository.
-func (p *ProductRepository) GetById(ctx context.Context, cond map[string]interface{}) (*dtoResponse.ProductsResponseDTO, error) {
-	panic("unimplemented")
+func (p *ProductRepository) GetById(ctx context.Context, id uint) (*dtoResp.ProductResponseDTO, error) {
+	dto := dtoResp.ProductResponseDTO{}
+
+	if err := p.db.Table(enum.PRODUCT_TABLE).Where("id = ?", id).First(&dto).Error; err != nil {
+		return nil, err
+	}
+
+	return &dto, nil
 }
 
-// Search implements repository.IProductRepository.
-func (p *ProductRepository) Search(ctx context.Context, filter *common.Filter, paging *common.Paging) (*[]model.Products, error) {
-	var products []model.Products
+func (p *ProductRepository) Search(ctx context.Context, filter *common.Filter, paging *common.Paging) (*[]dtoResp.ProductResponseDTO, error) {
+	var products []dtoResp.ProductResponseDTO
 
 	if filter != nil {
 		p.db.Table(enum.PRODUCT_TABLE).Where(filter)
@@ -52,7 +62,6 @@ func (p *ProductRepository) Search(ctx context.Context, filter *common.Filter, p
 	return &products, nil
 }
 
-// Update implements repository.IProductRepository.
-func (p *ProductRepository) Update(ctx context.Context, cond map[string]interface{}, data dtoRequest.UpdateProductDTO) error {
+func (p *ProductRepository) Update(ctx context.Context, cond map[string]interface{}, data dtoReq.UpdateProductDTO) error {
 	panic("unimplemented")
 }

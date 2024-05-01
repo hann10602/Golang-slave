@@ -3,15 +3,14 @@ package repository
 import (
 	"context"
 	"echo_postgre/common"
-	dtoRequest "echo_postgre/dto/req"
-	dtoResponse "echo_postgre/dto/resp"
-	"echo_postgre/model"
+	dtoReq "echo_postgre/dto/req"
+	dtoResp "echo_postgre/dto/resp"
 )
 
 type IProductRepository interface {
-	Search(context.Context, *common.Filter, *common.Paging) (*[]model.Products, error)
-	GetById(context.Context, map[string]interface{}) (*dtoResponse.ProductsResponseDTO, error)
-	Create(context.Context, dtoRequest.CreateProductDTO) (uint, error)
-	Update(context.Context, map[string]interface{}, dtoRequest.UpdateProductDTO) error
+	Search(context.Context, *common.Filter, *common.Paging) (*[]dtoResp.ProductResponseDTO, error)
+	GetById(context.Context, uint) (*dtoResp.ProductResponseDTO, error)
+	Create(context.Context, dtoReq.CreateProductDTO) error
+	Update(context.Context, map[string]interface{}, dtoReq.UpdateProductDTO) error
 	Delete(context.Context, map[string]interface{}) error
 }

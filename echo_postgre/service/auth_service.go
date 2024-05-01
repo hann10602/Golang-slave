@@ -1,7 +1,7 @@
 package service
 
 import (
-	dtoRequest "echo_postgre/dto/req"
+	dtoReq "echo_postgre/dto/req"
 	dto "echo_postgre/dto/resp"
 	"echo_postgre/initializer"
 	"echo_postgre/repository"
@@ -17,8 +17,8 @@ type AuthService struct {
 }
 
 type IAuthService interface {
-	HandleLogin(echo.Context, dtoRequest.LoginDto) (string, error)
-	HandleRegister(echo.Context, dtoRequest.CreateUserDTO) error
+	HandleLogin(echo.Context, dtoReq.LoginDto) (string, error)
+	HandleRegister(echo.Context, dtoReq.CreateUserDTO) error
 }
 
 func NewAuthService(userRepository repository.IUserRepository, settingsRepository repository.ISettingsRepository) IAuthService {
@@ -28,7 +28,7 @@ func NewAuthService(userRepository repository.IUserRepository, settingsRepositor
 	}
 }
 
-func (a *AuthService) HandleLogin(ctx echo.Context, data dtoRequest.LoginDto) (string, error) {
+func (a *AuthService) HandleLogin(ctx echo.Context, data dtoReq.LoginDto) (string, error) {
 	config, err := initializer.LoadConfig(".")
 
 	if err != nil {
@@ -63,7 +63,7 @@ func (a *AuthService) HandleLogin(ctx echo.Context, data dtoRequest.LoginDto) (s
 	return t, nil
 }
 
-func (a *AuthService) HandleRegister(ctx echo.Context, data dtoRequest.CreateUserDTO) error {
+func (a *AuthService) HandleRegister(ctx echo.Context, data dtoReq.CreateUserDTO) error {
 	userId, err := a.userRepository.Create(ctx.Request().Context(), data)
 
 	if err != nil && userId == 0 {
