@@ -74,10 +74,20 @@ func (u *UserImplement) GetById(ctx context.Context, cond map[string]interface{}
 	return &dto, nil
 }
 
-func (u *UserImplement) Search(ctx context.Context, filter common.Filter, paging common.Paging) (*[]model.Users, error) {
+func (u *UserImplement) Search(ctx context.Context, filter *common.Filter, paging *common.Paging) (*[]model.Users, error) {
 	var users []model.Users
 
-	if err := u.db.Table(enum.USER_TABLE).Preload("Settings").Where("status <> ?", "DELETED").Find(&users).Error; err != nil {
+	u.db.Table(enum.USER_TABLE).Preload("Settings").Where("status <> ?", "DELETED")
+
+	if filter != nil {
+		u.db = u.db.Where(filter)
+	}
+
+	if err := u.db.Table(enum.USER_TABLE).Count(&paging.Total).Error; err != nil {
+		return nil, err
+	}
+
+	if err := u.db.Table(enum.USER_TABLE).Offset((paging.Page - 1) * paging.Limit).Limit(paging.Limit).Find(&users).Error; err != nil {
 		return nil, err
 	}
 

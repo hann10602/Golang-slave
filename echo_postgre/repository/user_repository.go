@@ -9,7 +9,7 @@ import (
 )
 
 type IUserRepository interface {
-	Search(context.Context, common.Filter, common.Paging) (*[]model.Users, error)
+	Search(context.Context, *common.Filter, *common.Paging) (*[]model.Users, error)
 	GetById(context.Context, map[string]interface{}) (*dtoResponse.UserResponseDTO, error)
 	GetByUsernameAndPassword(context.Context, map[string]interface{}) (*model.Users, error)
 	Create(context.Context, dtoRequest.CreateUserDTO) (uint, error)

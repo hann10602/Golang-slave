@@ -78,18 +78,10 @@ func (u UserController) GetUserById(ctx echo.Context) error {
 }
 
 func (u UserController) SearchUser(ctx echo.Context) error {
-	// filter := ctx.Bind("filter")
-	// paging := ctx.FormValue("paging")
+	var paging common.Paging
+	var filter common.Filter
 
-	filter := common.Filter{
-		Status: "ACTIVE",
-	}
-
-	paging := common.Paging{
-		Page: 1,
-	}
-
-	data, err := u.userService.HandleSearchUsers(ctx, filter, paging)
+	err := ctx.Bind(&paging)
 
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, &common.Response{
@@ -99,10 +91,32 @@ func (u UserController) SearchUser(ctx echo.Context) error {
 		})
 	}
 
+	err = ctx.Bind(&filter)
+
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, &common.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    err.Error(),
+			Data:       false,
+		})
+	}
+
+	data, err := u.userService.HandleSearchUsers(ctx, &filter, &paging)
+
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, &common.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    err.Error(),
+			Data:       false,
+		})
+	}
+
+	paging.Process()
+
 	return ctx.JSON(http.StatusOK, &common.Response{
 		StatusCode: http.StatusOK,
 		Message:    "Search users successfully",
-		Data:       data,
+		Data:       common.HandleResponseWithPagination(data, paging),
 	})
 }
 

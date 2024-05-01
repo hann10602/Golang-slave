@@ -9,9 +9,9 @@ import (
 )
 
 type IProductRepository interface {
-	Search(context.Context, common.Filter, common.Paging) (*[]model.Users, error)
-	GetById(context.Context, map[string]interface{}) (*dtoResponse.UserResponseDTO, error)
-	Create(context.Context, dtoRequest.CreateUserDTO) (uint, error)
-	Update(context.Context, map[string]interface{}, dtoRequest.UpdateUserDTO) error
+	Search(context.Context, *common.Filter, *common.Paging) (*[]model.Products, error)
+	GetById(context.Context, map[string]interface{}) (*dtoResponse.ProductsResponseDTO, error)
+	Create(context.Context, dtoRequest.CreateProductDTO) (uint, error)
+	Update(context.Context, map[string]interface{}, dtoRequest.UpdateProductDTO) error
 	Delete(context.Context, map[string]interface{}) error
 }

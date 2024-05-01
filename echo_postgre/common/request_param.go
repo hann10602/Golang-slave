@@ -1,15 +1,17 @@
 package common
 
+type DefaultBinder struct{}
+
 type Filter struct {
-	Status   string `json:"status" form:"status"`
-	Username string `json:"username" form:"username"`
-	Role     string `json:"role" form:"role"`
+	Status   string `json:"status" query:"status""`
+	Username string `json:"username" query:"username""`
+	Role     string `json:"role" query:"role""`
 }
 
 type Paging struct {
-	Page  int `json:"page" form:"page"`
-	Limit int `json:"limit" form:"limit"`
-	Total int `json:"total" form:"-"`
+	Page  int   `json:"page" query:"page"`
+	Limit int   `json:"limit" query:"limit"`
+	Total int64 `json:"total"`
 }
 
 func (p *Paging) Process() {

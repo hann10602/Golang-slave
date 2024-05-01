@@ -14,7 +14,7 @@ type UserService struct {
 	userRepository repository.IUserRepository
 }
 type IUserService interface {
-	HandleSearchUsers(echo.Context, common.Filter, common.Paging) (*[]model.Users, error)
+	HandleSearchUsers(echo.Context, *common.Filter, *common.Paging) (*[]model.Users, error)
 	HandleGetUserById(echo.Context, map[string]interface{}) (*dtoResponse.UserResponseDTO, error)
 	HandleUpdateUsers(echo.Context, map[string]interface{}, dtoRequest.UpdateUserDTO) error
 	HandleDeleteUsers(echo.Context, map[string]interface{}) error
@@ -44,7 +44,7 @@ func (u *UserService) HandleGetUserById(ctx echo.Context, cond map[string]interf
 	return userData, nil
 }
 
-func (u *UserService) HandleSearchUsers(ctx echo.Context, filter common.Filter, paging common.Paging) (*[]model.Users, error) {
+func (u *UserService) HandleSearchUsers(ctx echo.Context, filter *common.Filter, paging *common.Paging) (*[]model.Users, error) {
 	data, err := u.userRepository.Search(ctx.Request().Context(), filter, paging)
 	if err != nil {
 		return nil, err
