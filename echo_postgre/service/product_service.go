@@ -14,6 +14,7 @@ type ProductService struct {
 }
 
 type IProductService interface {
+	HandleCreateProduct(ctx echo.Context, data dtoReq.CreateProductDTO) error
 	HandleSearchProducts(echo.Context, *common.Filter, *common.Paging) (*[]dtoResp.ProductResponseDTO, error)
 	HandleGetProductById(echo.Context, uint) (*dtoResp.ProductResponseDTO, error)
 	HandleUpdateProduct(echo.Context, map[string]interface{}, dtoReq.UpdateProductDTO) error
@@ -24,6 +25,14 @@ func NewProductService(productRepository repository.IProductRepository) IProduct
 	return &ProductService{
 		productRepository: productRepository,
 	}
+}
+
+func (p *ProductService) HandleCreateProduct(ctx echo.Context, data dtoReq.CreateProductDTO) error {
+	if err := p.productRepository.Create(ctx.Request().Context(), data); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (p *ProductService) HandleDeleteProduct(ctx echo.Context, cond map[string]interface{}) error {

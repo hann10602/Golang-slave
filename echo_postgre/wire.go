@@ -26,3 +26,8 @@ func InitializeAuthController(db *gorm.DB) controller.AuthController {
 	wire.Build(implement.NewUserImplement, implement.NewSettingsImplement, service.NewAuthService, controller.NewAuthController)
 	return controller.AuthController{}
 }
+
+// func InitializeProductController(db *gorm.DB) controller.ProductController {
+// 	wire.Build(implement.NewProductImplement, service.NewProductService, controller.NewProductController)
+// 	return controller.ProductController{}
+// }

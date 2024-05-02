@@ -63,5 +63,9 @@ func (p *ProductRepository) Search(ctx context.Context, filter *common.Filter, p
 }
 
 func (p *ProductRepository) Update(ctx context.Context, cond map[string]interface{}, data dtoReq.UpdateProductDTO) error {
-	panic("unimplemented")
+	if err := p.db.Table(enum.PRODUCT_TABLE).Where(cond).Updates(&data).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

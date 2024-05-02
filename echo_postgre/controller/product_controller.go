@@ -20,6 +20,34 @@ func NewProductController(productService service.IProductService) ProductControl
 	}
 }
 
+func (u ProductController) CreateProduct(ctx echo.Context) error {
+	var product dtoReq.CreateProductDTO
+
+	if err := ctx.Bind(&product); err != nil {
+		return ctx.JSON(http.StatusBadRequest, &common.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    err.Error(),
+			Data:       false,
+		})
+	}
+
+	err := u.productService.HandleCreateProduct(ctx, product)
+
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, &common.Response{
+			StatusCode: http.StatusBadRequest,
+			Message:    err.Error(),
+			Data:       false,
+		})
+	}
+
+	return ctx.JSON(http.StatusOK, &common.Response{
+		StatusCode: http.StatusOK,
+		Message:    "Created product successfully",
+		Data:       true,
+	})
+}
+
 func (u ProductController) DeleteProduct(ctx echo.Context) error {
 	productId := ctx.Param("id")
 
